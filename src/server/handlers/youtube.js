@@ -13,29 +13,26 @@ function exists (filename, cb) {
   })
 }
 
-function download (url, options = {
-  path: 'downloads',
-  audioOnly: false
-}) {
+function download (url, options) {
   return new Promise((resolve, reject) => {
-    let format = 'mp4'
-    if (options.audioOnly) {
-      format = 'mp3'
-    }
-
     // TODO Add proper support for options
     const video = youtubeDl(url,
       // Optional arguments passed to youtube-dl.
-      ['--format=18'],
+      ['--format=best', '--no-playlist'],
       // Additional options can be given for calling `child_process.execFile()`.
       { cwd: __dirname, maxBuffer: Infinity })
 
     // Will be called when the download starts.
     video.on('info', info => {
       let filename = info._filename
+      let format = info.ext
       filename = filename
-        .replace('.mp4', '')
+        .replace('.' + format, '')
         .substring(0, filename.length - 16)
+
+      if (options.audioOnly === 'true') {
+        format = 'mp3'
+      }
 
       const filePath = path.join(options.path, `${filename}.${format}`)
 

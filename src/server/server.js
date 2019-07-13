@@ -37,8 +37,10 @@ const provision = async () => {
       const url = request.payload.url
       const options = {
         path: path.join(__dirname, '../../public/temp'),
-        audioOnly: true
+        audioOnly: false
       }
+      
+      options.audioOnly = request.payload.audioOnly;
 
       mkdirp(options.path, err => {
         if (err) {

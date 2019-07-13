@@ -36,4 +36,10 @@
       background-color: darken($accent_primary, 10%);
     }
   }
+
+  &__radioBtn {
+    @include makePanel();
+    margin-left: 15px;
+    margin-right: 10px;
+  }
 }

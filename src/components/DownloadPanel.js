@@ -13,12 +13,12 @@ class DownloadPanel extends Component {
   constructor (props) {
     super(props)
 
-    console.log(localStorage.getItem('videos'))
     const storedVideos = localStorage.getItem('videos')
-    this.state = { videos: storedVideos || [] }
+    this.state = { videos: storedVideos, format: 'Audio' || [] }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleClearClick = this.handleClearClick.bind(this)
     this.handleVideoDownloadClick = this.handleVideoDownloadClick.bind(this)
+    this.handleOptionChanged = this.handleOptionChanged.bind(this)
   }
 
   handleClearClick () {
@@ -36,6 +36,12 @@ class DownloadPanel extends Component {
 
     // Can't use this.state.videos because this is bound to the function
     localStorage.setItem('videos', updatedVideos)
+  }
+
+  handleOptionChanged(e){
+    this.setState({
+      format: e.currentTarget.value
+    });
   }
 
   handleSubmit (e) {
@@ -69,7 +75,8 @@ class DownloadPanel extends Component {
       downloading: true
     }, ...videos] })
 
-    post('/download', `url=${url}`).then(newVideo => {
+    let audioOnly = this.state.format != 'Video'
+    post('/download', `url=${url}&audioOnly=${audioOnly}`).then(newVideo => {
       videos = this.state.videos
 
       const updatedVideos = videos.map(video =>
@@ -86,7 +93,7 @@ class DownloadPanel extends Component {
   render () {
     return (
       <div className='downloadPanel'>
-        <DownloadForm onSubmit={this.handleSubmit} />
+        <DownloadForm onSubmit={this.handleSubmit} onChange={this.handleOptionChanged} />
         <DownloadList
           videos={this.state.videos}
           onClearClick={this.handleClearClick}
